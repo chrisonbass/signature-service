@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  signature-service:
+    container_name: signature-service
+    # image: maven:3.8.3-openjdk-11
+    build: ./
+    volumes:
+      - ./app:/app
+    depends_on:
+      - signature-couchbase-db
+
+  signature-couchbase-db:
+    container_name: signature-couchbase-db
+    image: couchbase
+    networks:
+      - signature-service-network
+    volumes:
+      - signature-couchbase-vol:/opt/couchbase/var
+    ports:
+      - "8091-8094:8091-8094"
+      - "11210:11210"
+
+networks:
+  signature-service-network:
+    name: signature-service-network
+
+volumes:
+  signature-couchbase-vol:
+    name: signature-couchbase-vol
