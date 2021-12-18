@@ -22,3 +22,4 @@ echo "[ ] cat encoded-message.txt | base64 --decode | openssl rsautl -inkey publ
 cat encoded-message.txt | base64 --decode | openssl rsautl -inkey public.pem -pubin;
 
 # docker run -dit --name sigs -v I:\Websites\signature-service\app:/app --rm -p 8088:8080 signature-service-test 
+# docker run -dit --name sigs -v ~/dev/personal/signature-service:/app --rm -p 8088:8080 signature-service-test 

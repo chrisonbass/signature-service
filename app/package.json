@@ -1,0 +1,19 @@
+{
+  "name": "signature-service",
+  "version": "1.0.0",
+  "description": "Service used to create/validate signed messages",
+  "main": "server.js",
+  "type": "module",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Chris Moss",
+  "license": "ISC",
+  "dependencies": {
+    "mocha": "^9.1.3"
+  }
+}

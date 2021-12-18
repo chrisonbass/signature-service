@@ -1,0 +1,176 @@
+openapi: 3.0.0
+info:
+  title: Signature Service
+  description: Service used to create/validate signed messages
+  version: 1.0.0
+servers:
+- url: http://signature.127.0.0.1
+  description: Development
+tags:
+- name: signature
+  description: endpoints for managing signatures
+paths:
+  /v1/signature:
+    get:
+      tags:
+      - signature
+      summary: Retrieves a Signature with the unsigned message
+      operationId: v1SignatureGET
+      parameters:
+      - name: x-signature
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: f6c27f992ca90e3b0a6a2a675393a41a
+      - name: x-signature-key
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: f6c27f992ca90e3b0a6a2a675393a41a
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureBodyResponse'
+      x-swagger-router-controller: Signature
+    post:
+      tags:
+      - signature
+      summary: Create a Signature
+      operationId: v1SignaturePOST
+      requestBody:
+        description: Signature request
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignatureRequest'
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignatureCreateResponse'
+      security:
+      - ApiToken: []
+      x-swagger-router-controller: Signature
+    delete:
+      tags:
+      - signature
+      summary: Deletes a signature
+      operationId: v1SignatureDELETE
+      parameters:
+      - name: x-signature
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: f6c27f992ca90e3b0a6a2a675393a41a
+      - name: x-signature-key
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: f6c27f992ca90e3b0a6a2a675393a41a
+      responses:
+        "204":
+          description: successful operation
+      security:
+      - ApiToken: []
+      x-swagger-router-controller: Signature
+components:
+  schemas:
+    SignatureRequest:
+      required:
+      - message
+      type: object
+      properties:
+        message:
+          type: string
+          description: The message to be signed
+          example: example message to sign
+        ttl:
+          type: number
+          description: The time-to-live in seconds.  The default is 24 hours or 86400
+            seconds.
+          example: 86400
+          default: 86400
+    SignatureCreateResponse:
+      type: object
+      properties:
+        signature:
+          type: string
+          description: The message to be signed
+          example: VOsOZh/m/5+O1kLPPPaAq1py6ziXBxBgKudyamjdPcKT0cZHC3XHs0+bSpgck1NnHc/hYTqCTWY9
+            LhE8DGuMlmlepkrP+asqohoQM66JYVlCyEdePzdB8E9VzGYWA5cfMdKAP0Y6WQee4Km/gBhZIECT
+            JWUucAvgUCNZLyLzHcviaFzHgCQek08z71vIz0hACsz3qHBAgEQrepX8B/K7jCT1yEwiNZ5xWa2R
+            23moz2vAbXW8pDOVB6xEtqv4j2mHXgdUVnIjMJeOgz6X4A7pSl/Xh59i6UkswHrgwDz9rRzmvSyk
+            SkdlLTZdnsDH+QR+rd3sAAZC6T2zismlAU6NWw==
+        signature-key:
+          type: string
+          description: A key that must be sent with signature when validating
+          example: a41ef0929dbda09abd519facf2f371f0
+        ttl:
+          type: number
+          description: The time-to-live in seconds.  The default is 24 hours or 86400
+            seconds.
+          example: 86400
+          default: 86400
+      example:
+        signature-key: a41ef0929dbda09abd519facf2f371f0
+        signature: VOsOZh/m/5+O1kLPPPaAq1py6ziXBxBgKudyamjdPcKT0cZHC3XHs0+bSpgck1NnHc/hYTqCTWY9
+          LhE8DGuMlmlepkrP+asqohoQM66JYVlCyEdePzdB8E9VzGYWA5cfMdKAP0Y6WQee4Km/gBhZIECT
+          JWUucAvgUCNZLyLzHcviaFzHgCQek08z71vIz0hACsz3qHBAgEQrepX8B/K7jCT1yEwiNZ5xWa2R
+          23moz2vAbXW8pDOVB6xEtqv4j2mHXgdUVnIjMJeOgz6X4A7pSl/Xh59i6UkswHrgwDz9rRzmvSyk
+          SkdlLTZdnsDH+QR+rd3sAAZC6T2zismlAU6NWw==
+        ttl: 86400
+    SignatureBodyResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The original unsigned message
+          example: sample unsigned message
+        ttl:
+          type: number
+          description: The time-to-live left on the signature
+          example: 86400
+      example:
+        message: sample unsigned message
+        ttl: 86400
+  parameters:
+    Signature:
+      name: x-signature
+      in: header
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        example: f6c27f992ca90e3b0a6a2a675393a41a
+    SignatureKey:
+      name: x-signature-key
+      in: header
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        example: f6c27f992ca90e3b0a6a2a675393a41a
+  securitySchemes:
+    ApiToken:
+      type: apiKey
+      name: Authorization
+      in: header

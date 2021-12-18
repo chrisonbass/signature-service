@@ -7,8 +7,8 @@ services:
     build: ./
     volumes:
       - ./app:/app
-    depends_on:
-      - signature-couchbase-db
+    # depends_on:
+      # - signature-couchbase-db
 
   signature-couchbase-db:
     container_name: signature-couchbase-db

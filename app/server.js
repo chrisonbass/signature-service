@@ -2,7 +2,6 @@ const { exec } = require('child_process');
 const crypto = require('crypto');
 const fs = require('fs');
 
-
 const tmpDir = crypto.randomBytes(20).toString('hex').substr(0, 8);
 const tmpPath = `/tmp/${tmpDir}`;
 let messageUnsigned;
