@@ -4,14 +4,15 @@
   "description": "Service used to create/validate signed messages",
   "main": "index.js",
   "scripts": {
-    "prestart": "npm install",
+    "predebug": "npm link oas3-tools",
+    "debug": "nodemon --inspect=0.0.0.0 index.js",
+    "prestart": "npm link oas3-tools",
     "start": "node index.js"
   },
   "keywords": [
     "swagger"
   ],
   "license": "Unlicense",
-  "private": true,
   "dependencies": {
     "connect": "^3.2.0",
     "js-yaml": "^3.3.0",

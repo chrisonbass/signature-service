@@ -4,7 +4,7 @@ info:
   description: Service used to create/validate signed messages
   version: 1.0.0
 servers:
-- url: http://signature.127.0.0.1
+- url: http://localhost:8080
   description: Development
 tags:
 - name: signature
