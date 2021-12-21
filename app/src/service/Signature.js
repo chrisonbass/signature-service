@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { fromUrlSafe, toUrlSafe } from '../utils/base64.js';
 
 import execCommand from '../utils/execCommand.js';
 import { randomHash } from '../utils/hash.js';
@@ -46,10 +47,12 @@ export default class Signature {
         const messagePath = `${this.basePath}/unsigned-message.txt`;
         await setupKeys(privateKeyPath, publicKeyPath);
         fs.writeFileSync(messagePath, cleanedMessage);
-        return (await execCommand(`openssl rsautl -sign \
+        const encodedMessage = (await execCommand(`openssl rsautl -sign \
             -inkey ${privateKeyPath} \
             -in ${messagePath} | \
             base64`)).toString('utf-8').trim();
+        const urlSafeMessage = toUrlSafe(encodedMessage);
+        return urlSafeMessage;
     }
 
     async decryptSignedMessage(signedMessage, publicKey) {
@@ -57,12 +60,10 @@ export default class Signature {
         const publicKeyPath = this.publicKeyPath();
         const messagePath = `${this.basePath}/message.txt`;
         await execCommand(`mkdir -p ${this.basePath}`);
-        fs.writeFileSync(messagePath, signedMessage);
+        const convertedSigned = fromUrlSafe(signedMessage);
+        fs.writeFileSync(messagePath, convertedSigned);
         fs.writeFileSync(publicKeyPathTemp, publicKey);
         await execCommand(`cat ${publicKeyPathTemp} | base64 --decode > ${publicKeyPath}`);
-        await execCommand(`cat ${publicKeyPathTemp}`);
-        await execCommand(`cat ${publicKeyPath}`);
-        await execCommand(`cat ${messagePath}`);
         const jsonMessage = (await execCommand(`cat ${messagePath} | \
             base64 --decode | \
             openssl rsautl -inkey ${publicKeyPath} \
