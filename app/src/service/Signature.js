@@ -40,11 +40,12 @@ export default class Signature {
     }
     
     async signMessage(message) {
+        const cleanedMessage = JSON.stringify({message});
         const publicKeyPath = this.publicKeyPath();
         const privateKeyPath = this.privateKeyPath();
         const messagePath = `${this.basePath}/unsigned-message.txt`;
         await setupKeys(privateKeyPath, publicKeyPath);
-        fs.writeFileSync(messagePath, message);
+        fs.writeFileSync(messagePath, cleanedMessage);
         return (await execCommand(`openssl rsautl -sign \
             -inkey ${privateKeyPath} \
             -in ${messagePath} | \
@@ -62,10 +63,12 @@ export default class Signature {
         await execCommand(`cat ${publicKeyPathTemp}`);
         await execCommand(`cat ${publicKeyPath}`);
         await execCommand(`cat ${messagePath}`);
-        return (await execCommand(`cat ${messagePath} | \
+        const jsonMessage = (await execCommand(`cat ${messagePath} | \
             base64 --decode | \
             openssl rsautl -inkey ${publicKeyPath} \
             -pubin`)).toString('utf-8').trim();
+        const message = jsonMessage && jsonMessage.length && JSON.parse(jsonMessage);
+        return message && message.message;
     }
 
     async cleanup() {

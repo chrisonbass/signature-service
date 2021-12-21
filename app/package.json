@@ -10,13 +10,12 @@
   "scripts": {
     "setup": "npm link express file-type",
     "debug": "nodemon --inspect=0.0.0.0 server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha tests/",
     "start": "node server.js"
   },
   "author": "Chris Moss",
   "license": "ISC",
   "dependencies": {
-    "add-dependencies": "^1.1.0",
     "couchbase": "^3.2.4",
     "express": "^4.17.2",
     "file-type": "^17.0.2",
