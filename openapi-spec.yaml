@@ -45,18 +45,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignatureCreateResponse"
-    delete:
-      tags:
-        - signature
-      summary: "Deletes a signature"
-      security:
-        - ApiToken: []
-      parameters:
-        - $ref: "#/components/parameters/Signature"
-        - $ref: "#/components/parameters/SignatureKey"
-      responses:
-        204: 
-          description: "successful operation"
 components:
   securitySchemes:
     ApiToken:
@@ -65,15 +53,15 @@ components:
       name: "Authorization"
   parameters:
     Signature:
-      name: "x-signature"
-      in: "header"
+      name: "signature"
+      in: "query"
       required: true
       schema:
         type: string
         example: "f6c27f992ca90e3b0a6a2a675393a41a"
     SignatureKey:
-      name: "x-signature-key"
-      in: "header"
+      name: "key"
+      in: "query"
       required: true
       schema:
         type: string
@@ -104,7 +92,7 @@ components:
                     JWUucAvgUCNZLyLzHcviaFzHgCQek08z71vIz0hACsz3qHBAgEQrepX8B/K7jCT1yEwiNZ5xWa2R
                     23moz2vAbXW8pDOVB6xEtqv4j2mHXgdUVnIjMJeOgz6X4A7pSl/Xh59i6UkswHrgwDz9rRzmvSyk
                     SkdlLTZdnsDH+QR+rd3sAAZC6T2zismlAU6NWw==
-        signature-key:
+        key:
           description: A key that must be sent with signature when validating
           type: string
           example: a41ef0929dbda09abd519facf2f371f0
@@ -124,4 +112,3 @@ components:
           type: number
           description: The time-to-live left on the signature
           example: 86400
-

@@ -1,109 +1,47 @@
-const { exec } = require('child_process');
-const crypto = require('crypto');
-const fs = require('fs');
+import express from 'express';
+import couchbase from 'couchbase';
+import Signature from './src/controllers/Signature.js';
+import authenticateSignature from './src/authorize/authenticateSignature.js';
+import bodyHasMessage from './src/validator/bodyHasMessage.js';
 
-const tmpDir = crypto.randomBytes(20).toString('hex').substr(0, 8);
-const tmpPath = `/tmp/${tmpDir}`;
-let messageUnsigned;
-let messageSigned;
+const app = express();
+const port = 3000
+const hostname = '0.0.0.0';
 
-console.log("Testings commands");
-
-async function execCommand(cmd) {
-  return new Promise((resolve, reject) => {
-    console.log(cmd);
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) {
-        reject(stderr);
-      } else {
-        resolve(stdout);
-      }
-    });
+let couchbaseCollection;
+let signatureController;
+const serviceSetup = async () => {
+  // Connect to couchbase
+  const cluster = await couchbase.connect('couchbase://signature-couchbase-db', {
+    username: 'user',
+    password: 'test1234',
   });
-}
+  // Select main bucket
+  const bucket = cluster.bucket('main');
+  // Retrieve default collection for this service
+  couchbaseCollection = bucket.defaultCollection();
+  // Intialize signature controller
+  signatureController = new Signature(couchbaseCollection);
+};
 
-function parseArgs(){
-  const args = process.argv;
-  let message;
-  let isDecrypt = false;
-  let flagMessage = false;
-  let flagDecrypt = false;
-  for(const arg of args) {
-    console.log(`arg = ${arg}`);
-    const parsedArg = arg.toLowerCase().trim();
-    if (parsedArg === "-m" || parsedArg === "-message") {
-      flagMessage = true;
-    }
-    else if (flagMessage === true) {
-      message = arg;
-    }
-    else if (parsedArg === "-d" || parsedArg === "-decrypt") {
-      flagDecrypt = true;
-    }
-    else if (flagDecrypt === true) {
-      isDecrypt = true;
-    }
-  }
-  return {message, isDecrypt};
-}
+const main = async () => {
+  await serviceSetup();
 
-async function setupTempSpace() {
-  try {
-    await execCommand(`mkdir ${tmpPath}`);
-  } catch (e) {
-    console.error("Error creating temp directory", e);
-  }
-}
+  // Add JSON body parsing
+  app.use(express.json());
 
-async function createKeys() {
-  try {
-    await execCommand(`openssl genrsa -out ${tmpPath}/private.pem 2048`);
-  } catch (e) {
-    console.error("Error creating private key", e);
-  }
-  try {
-    await execCommand(`openssl rsa -in ${tmpPath}/private.pem -pubout -out ${tmpPath}/public.pem`);
-  } catch (e) {
-    console.error("Error creating public key", e);
-  }
-}
+  // Retrieve message
+  // const getMessage = signatureController.getMessage.bind(signatureController);
+  app.get('/', authenticateSignature, signatureController.getMessage);
 
-async function createSignedMessage() {
-  const prPath = `${tmpPath}/private.pem`;
-  const pbPath = `${tmpPath}/public.pem`;
-  const umPath = `${tmpPath}/unsigned-message.txt`;
-  const smPath = `${tmpPath}/signed-message.txt`;
-  fs.writeFileSync(umPath, messageUnsigned);
-  await execCommand(`openssl rsautl -sign -inkey ${prPath} -in ${umPath} | base64 >> ${smPath}`);
-  messageSigned = fs.readFileSync(smPath).toString('utf8');
-  console.log("==== Signed Message ====");
-  console.log({
-    message: messageSigned.trim(),
-    key: (await execCommand(`cat ${pbPath} | base64`)).trim()
+  // Create message
+  // const createMessage = signatureController.createMessage.bind(signatureController);
+  app.put('/', bodyHasMessage, signatureController.createMessage);
+
+  app.listen(port, hostname, () => {
+    console.log("new");
+    console.log(`Example app listening at http://${hostname}:${port}`)
   });
-}
-
-async function cleanup() {
-  await execCommand(`rm -rf ${tmpPath}`);
-}
-
-async function main() {
-  const args = parseArgs();
-  if (args.isDecrypt) {
-    messageSigned = args.message;
-  } else {
-    messageUnsigned = args.message;
-  }
-  if (!messageSigned && !messageUnsigned) {
-    console.error("Missing required option -m '<message>'");
-    return;
-  }
-  await setupTempSpace();
-  await createKeys();
-  if (!args.isDecrypt) {
-    await createSignedMessage();
-  }
-  await cleanup();
-}
+};
 
 main();

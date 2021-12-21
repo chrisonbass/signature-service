@@ -8,6 +8,7 @@ services:
       context: ./
     networks:
       - signature-service-network
+      - todo-app-network
     volumes:
       - ./app:/app
     ports:
@@ -31,6 +32,8 @@ services:
 networks:
   signature-service-network:
     name: signature-service-network
+  todo-app-network:
+    name: todo-app-network
 
 volumes:
   signature-couchbase-vol:
