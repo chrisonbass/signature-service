@@ -1,13 +1,11 @@
-import { request } from 'express';
-import { stat } from 'fs';
 import http from 'http';
 
 const baseUrl = "http://localhost:3000";
 const testMessage = {
-    message: {
-        name: "test",
-        time: new Date().toLocaleString()
-    }
+  message: {
+    name: "test",
+    time: new Date().toLocaleString()
+  }
 };
 
 let result;

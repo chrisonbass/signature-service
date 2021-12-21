@@ -9,6 +9,9 @@ const bodyHasMessage = (req, res, next) => {
         });
     }
     req.params.message = body.message;
+    if (body && body.ttl) {
+        req.params.ttl = body.ttl;
+    }
     return next();
 }
 

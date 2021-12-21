@@ -8,9 +8,9 @@
     "test": "tests"
   },
   "scripts": {
-    "setup": "npm install",
-    "debug": "nodemon --inspect=0.0.0.0:9219 server.js",
-    "test": "mocha tests/",
+    "predebug": "npm install",
+    "debug": "node --inspect=0.0.0.0:9229 server.js",
+    "prestart": "npm install",
     "start": "node server.js"
   },
   "author": "Chris Moss",
