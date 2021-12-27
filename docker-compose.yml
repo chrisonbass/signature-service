@@ -4,7 +4,7 @@ services:
   signature-service:
     container_name: sigs
     build: 
-      context: ./Dockerfile
+      context: ./
       dockerfile: ./Dockerfile
     networks:
       - signature-service-network
