@@ -21,7 +21,7 @@ export default function CouchbaseService() {
         resolve(collection);
       } catch (e) {
         console.error("Received Error loading couchbase client", e);
-        if (attempts < 3) {
+        if (attempts < 5) {
           console.log(`\n ===== Retrying Couchbase Client ====== \n =====        in 3 seconds       ====== \n`);
           setTimeout(attempt, 3000);
         } else {

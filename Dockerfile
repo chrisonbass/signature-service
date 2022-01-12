@@ -7,7 +7,6 @@ ARG DEBUG_PORT=9229
 COPY ./app /app
 
 RUN apt install -y openssl
-RUN npm install -g couchbase
 
 WORKDIR /app
 
